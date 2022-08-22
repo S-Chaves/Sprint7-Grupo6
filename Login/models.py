@@ -1,9 +1,9 @@
 from django.db import models
-from django.contrib.auth.models import AbstractUser, PermissionsMixin
+from django.contrib.auth.models import AbstractUser
 from Clientes.models import Cliente
 
 # Create your models here.
-class User(AbstractUser, PermissionsMixin):
+class User(AbstractUser):
   REQUIRED_FIELDS = ['dni']
   USERNAME_FIELD = 'username'
 
