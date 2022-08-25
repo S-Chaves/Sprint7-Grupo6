@@ -27,6 +27,30 @@
       {% endif %}
       <button class="form-btn" type="submit">Enviar</button>
     </form>
+    <div class="prestamos-container">
+      <h1 class="subtitulo">Tus préstamos</h1>
+      {% if prestamos %}
+        <div class="prestamos-table">
+          <div class="prestamos-header">
+            <p>Fecha</p>
+            <p>Monto</p>
+            <p>Tipo</p>
+          </div>
+          {% for prestamo in prestamos %}
+          <div class="prestamo">
+            <p>{{ prestamo.loan_date }}</p>
+            <p>${{ prestamo.loan_total }}</p>
+            <p>{{ prestamo.loan_type }}</p>
+          </div>
+          {% endfor %}
+        </div>
+      {% else %}
+        <div class="prestamo-vacio">
+          <p>Usted no ha tramitado préstamos aún.</p>
+        </div>
+      {% endif %}
+    </div>
+    
   </section>
   <script>
     const today = new Date().toISOString().slice(0, 10)

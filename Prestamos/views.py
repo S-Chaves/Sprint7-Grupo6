@@ -17,6 +17,7 @@ class PrestamosView(LoginRequiredMixin, generic.DetailView):
   def post(self, request):
     user = request.user.customer_id
     cliente = Cliente.objects.get(customer_id = user.customer_id)
+    prestamos = Prestamo.objects.filter(customer_id = user.customer_id)
     tipo_cliente = cliente.tipo_cliente.tipo
 
     tipo_prestamo = request.POST['tipo'].upper()
@@ -25,13 +26,13 @@ class PrestamosView(LoginRequiredMixin, generic.DetailView):
 
     if tipo_cliente == 'Classic' and monto > 100000:
       error = 'El monto seleccionado excede el límite de tu tipo de cuenta.'
-      return render(request, 'Prestamos/prestamos.html', { 'error': error })
+      return render(request, 'Prestamos/prestamos.html', { 'error': error, 'prestamos': prestamos })
     elif tipo_cliente == 'Gold' and monto > 300000:
       error = 'El monto seleccionado excede el límite de tu tipo de cuenta.'
-      return render(request, 'Prestamos/prestamos.html', { 'error': error })
+      return render(request, 'Prestamos/prestamos.html', { 'error': error, 'prestamos': prestamos })
     elif tipo_cliente == 'Black' and monto > 500000:
       error = 'El monto seleccionado excede el límite de tu tipo de cuenta.'
-      return render(request, 'Prestamos/prestamos.html', { 'error': error })
+      return render(request, 'Prestamos/prestamos.html', { 'error': error, 'prestamos': prestamos })
 
     prestamo = Prestamo(loan_type = tipo_prestamo, loan_date = fecha,
      loan_total = monto, customer_id = user.customer_id)
