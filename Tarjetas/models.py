@@ -16,8 +16,8 @@ class Tarjeta(models.Model):
     fecha_otorgamiento = models.TextField(blank=True, null=True)
     fecha_expiracion = models.TextField(blank=True, null=True)
     tipo_tarjeta = models.TextField(blank=True, null=True)
-    marca_tarjeta = models.ForeignKey(MarcasTarjeta, on_delete=models.DO_NOTHING)
-    customer_id = models.ForeignKey(Cliente, on_delete=models.DO_NOTHING)
+    marca_tarjeta = models.ForeignKey(MarcasTarjeta, on_delete=models.DO_NOTHING,  db_column='marca_tarjeta')
+    customer_id = models.ForeignKey(Cliente, on_delete=models.DO_NOTHING, db_column='customer_id')
 
     class Meta:
         managed = False

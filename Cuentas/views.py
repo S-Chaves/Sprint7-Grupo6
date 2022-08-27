@@ -11,8 +11,11 @@ class CuentaListView(generics.ListAPIView):
   def get_queryset(self):
     id = self.kwargs['pk']
     user_id = self.request.user.customer_id.customer_id
+    cuentas = Cuenta.objects.filter(customer_id = id)
 
+    if not cuentas.exists():
+      raise exceptions.NotFound(detail="No encontrado.")
     if user_id != id:
       raise exceptions.PermissionDenied(detail="Usted no tiene permiso para realizar esta acción.")
 
-    return Cuenta.objects.filter(customer_id = id)
+    return cuentas
