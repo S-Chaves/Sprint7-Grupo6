@@ -1,6 +1,7 @@
 from django.urls import path
-from . import views
+from .views import IndexView, ClienteRetrieveView
 
 urlpatterns = [
-    path('', views.IndexView.as_view(), name = 'index')
+    path('api/clientes/<int:customer_id>/', ClienteRetrieveView.as_view()),
+    path('', IndexView.as_view(), name = 'index')
 ]
