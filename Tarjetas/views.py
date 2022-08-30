@@ -1,5 +1,3 @@
-from math import perm
-from django.shortcuts import render
 from rest_framework import generics, exceptions
 from .models import Tarjeta
 from .serializers import TarjetaSerializer

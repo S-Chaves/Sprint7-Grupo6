@@ -3,9 +3,11 @@ from django.contrib.auth.mixins import LoginRequiredMixin
 from django.views import generic
 from .models import Prestamo
 from Clientes.models import Cliente
-from rest_framework import generics, exceptions
-from .permissions import IsAuthenticated
-from .serializers import PrestamoSerializer
+from Cuentas.models import Cuenta
+from rest_framework import generics, exceptions, viewsets
+from .permissions import IsAuthenticated, IsAdminAndAuthenticated
+from .serializers import PrestamoSerializer, PrestamoCreateSerializer
+from django.shortcuts import get_object_or_404
 
 # Create your views here.
 class PrestamosView(LoginRequiredMixin, generic.DetailView):
@@ -58,3 +60,41 @@ class PrestamoListView(generics.ListAPIView):
       raise exceptions.PermissionDenied(detail="Usted no tiene permiso para realizar esta acción.")
 
     return prestamos
+
+class PrestamoCreateView(viewsets.ModelViewSet):
+  permission_classes = [IsAdminAndAuthenticated]
+  serializer_class = PrestamoCreateSerializer
+  queryset = Prestamo.objects.all()
+
+  def perform_create(self, serializer):
+    id = self.kwargs['pk']
+    account_id = self.kwargs['account_id']
+
+    cliente = get_object_or_404(Cliente, customer_id=id)
+    account = get_object_or_404(Cuenta, account_id=account_id)
+
+    if cliente.customer_id != account.customer_id.customer_id:
+      raise exceptions.PermissionDenied(detail="El cliente no posee la cuenta solicitada.")
+
+    account.balance = account.balance + int(self.request.data['loan_total'])
+    account.save()
+    
+    return serializer.save(customer_id=cliente)
+
+class PrestamoDeleteView(generics.DestroyAPIView):
+  permission_classes = [IsAdminAndAuthenticated]
+  serializer_class = PrestamoCreateSerializer
+  queryset = Prestamo.objects.all()
+
+  def perform_destroy(self, instance):
+    account_id = self.kwargs['account_id']
+
+    account = get_object_or_404(Cuenta, account_id=account_id)
+    
+    if instance.customer_id.customer_id != account.customer_id.customer_id:
+      raise exceptions.PermissionDenied(detail="El cliente no posee la cuenta solicitada.")
+
+    account.balance = account.balance - instance.loan_total
+    account.save()
+
+    instance.delete()
